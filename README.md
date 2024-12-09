@@ -149,8 +149,7 @@ Run the test suite using the following command:
 ## Project Roadmap
 
 - [x] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Implement feature two.
-- [ ] **`Task 3`**: Implement feature three.
+- [ ] **`Task 2`**: Add more DB Engines
 
 ---
 
@@ -194,17 +193,3 @@ Run the test suite using the following command:
    </a>
 </p>
 </details>
-
----
-
-## License
-
-This project is protected under the [SELECT-A-LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
-
----
-
-## Acknowledgments
-
-- List any resources, contributors, inspiration, etc. here.
-
----
