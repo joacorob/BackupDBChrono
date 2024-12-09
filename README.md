@@ -64,7 +64,7 @@ This solution is ideal for developers, sysadmins, or anyone needing a simple, au
 
 ## Project Structure
 
-````sh
+```sh
 └── BackupDBChrono/
     ├── backups
     │   └── .keep
@@ -83,8 +83,10 @@ This solution is ideal for developers, sysadmins, or anyone needing a simple, au
         └── utils
             ├── compression.js
             └── naming.js
+```
 
-###  Project Index
+### Project Index
+
 <details open>
 	<summary><b><code>BACKUPDBCHRONO/</code></b></summary>
 	<details> <!-- __root__ Submodule -->
@@ -180,26 +182,27 @@ This solution is ideal for developers, sysadmins, or anyone needing a simple, au
 </details>
 
 ---
-##  Getting Started
 
-###  Prerequisites
+## Getting Started
+
+### Prerequisites
 
 Before getting started with BackupDBChrono, ensure your runtime environment meets the following requirements:
 
 - **Programming Language:** JavaScript
 - **Package Manager:** Npm
 
-
-###  Installation
+### Installation
 
 Install BackupDBChrono using one of the following methods:
 
 **Build from source:**
 
 1. Clone the BackupDBChrono repository:
+
 ```sh
 ❯ git clone https://github.com/joacorob/BackupDBChrono
-````
+```
 
 2. Navigate to the project directory:
 
@@ -238,8 +241,8 @@ Run the test suite using the following command:
 ## Project Roadmap
 
 - [x] **`Task 1`**: <strike>Implement feature one.</strike>
-- [ ] **`Task 2`**: Add support for additional database engines.
-- [ ] **`Task 3`**: Add more configuration options (cron interval, retention count).
+- [ ] **`Task 2`**: Implement feature two.
+- [ ] **`Task 3`**: Implement feature three.
 
 ---
 
@@ -283,3 +286,17 @@ Run the test suite using the following command:
    </a>
 </p>
 </details>
+
+---
+
+## License
+
+This project is protected under the [SELECT-A-LICENSE](https://choosealicense.com/licenses) License. For more details, refer to the [LICENSE](https://choosealicense.com/licenses/) file.
+
+---
+
+## Acknowledgments
+
+- List any resources, contributors, inspiration, etc. here.
+
+---
