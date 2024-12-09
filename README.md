@@ -3,7 +3,7 @@
 </p>
 <p align="center"><h1 align="center">BACKUPDBCHRONO</h1></p>
 <p align="center">
-	<em><code>❯ REPLACE-ME</code></em>
+		<em><code>Effortless, automated, and periodic database backups with S3 storage & Telegram notifications.</code></em>
 </p>
 <p align="center">
 	<img src="https://img.shields.io/github/license/joacorob/BackupDBChrono?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
