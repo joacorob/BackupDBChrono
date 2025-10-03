@@ -41,8 +41,8 @@
 **BackupDBChrono** is a Node.js-based tool designed to:
 
 - Connect to multiple databases (MySQL, MongoDB, SQLite, etc.) using environment variables.
-- Automatically run backups every 12 hours using `node-cron`.
-- Compress and store the last 10 versions of each database backup.
+- Automatically run backups every 4 hours using `node-cron`.
+- Compress and store the last 30 versions of each database backup (5 days of history).
 - Push each backup to an S3 bucket.
 - Send a Telegram notification once the backup is complete.
 - Clean up local backups after successful uploads.
@@ -54,8 +54,8 @@ This solution is ideal for developers, sysadmins, or anyone needing a simple, au
 ## Features
 
 - **Multiple Database Support:** Easily add new databases by specifying their connection URLs in an environment variable.
-- **Automatic Scheduling:** Uses `node-cron` to run backups every 12 hours by default.
-- **Versioned Backups:** Retains the last 10 backups for each database, ensuring historical redundancy.
+- **Automatic Scheduling:** Uses `node-cron` to run backups every 4 hours by default.
+- **Versioned Backups:** Retains the last 30 backups for each database (5 days of history), ensuring historical redundancy.
 - **S3 Integration:** Seamlessly uploads compressed backups to an Amazon S3 bucket.
 - **Telegram Notifications:** Sends a message to a specified Telegram chat upon backup completion.
 - **Agnostic Configuration:** Define databases and credentials without modifying code—just adjust environment variables.

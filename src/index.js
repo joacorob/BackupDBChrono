@@ -58,8 +58,8 @@ async function performBackup() {
   }
 }
 
-// Run backup every 12 hours
-cron.schedule("0 */12 * * *", performBackup);
+// Run backup every 4 hours
+cron.schedule("0 */4 * * *", performBackup);
 
 // Initial backup on start
 performBackup();
