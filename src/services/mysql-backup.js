@@ -75,12 +75,12 @@ export async function backupMysql(url, destPath) {
 
       // Get create table statement
       const [createTable] = await connection.query(
-        `SHOW CREATE TABLE ${tableName}`
+        `SHOW CREATE TABLE \`${tableName}\``
       );
       await writeStream.write(`${createTable[0]["Create Table"]};\n\n`);
 
       // Get table data
-      const [rows] = await connection.query(`SELECT * FROM ${tableName}`);
+      const [rows] = await connection.query(`SELECT * FROM \`${tableName}\``);
 
       if (rows.length > 0) {
         await writeStream.write(
