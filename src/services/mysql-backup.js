@@ -36,6 +36,16 @@ function formatValue(value) {
     return value.toString();
   }
 
+  if (value === undefined) {
+    return "NULL";
+  }
+
+  if (value && typeof value === "object") {
+    // JSON/geometry/etc: serialize to JSON and escape quotes/backslashes
+    const json = JSON.stringify(value);
+    return `'${json.replace(/'/g, "''").replace(/\\/g, "\\\\")}'`;
+  }
+
   return value;
 }
 
@@ -59,6 +69,7 @@ export async function backupMysql(url, destPath) {
       'SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO,ALLOW_INVALID_DATES";\n'
     );
     await writeStream.write('SET time_zone = "+00:00";\n\n');
+    await writeStream.write("SET NAMES utf8mb4;\n\n");
 
     // Get all tables
     const [tables] = await connection.query("SHOW TABLES");
