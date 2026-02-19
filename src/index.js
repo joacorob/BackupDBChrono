@@ -62,11 +62,11 @@ async function performBackup() {
       const fileSize = await getFileSize(compressedPath);
 
       // Upload to S3
-      const downloadUrl = await uploadToS3(compressedPath, db.name);
+      const { url, latestUrl } = await uploadToS3(compressedPath, db.name);
       console.log(`Backup uploaded for ${db.name}`);
 
       // Notify success
-      await telegramService.notifyBackupSuccess(db.name, fileSize, downloadUrl);
+      await telegramService.notifyBackupSuccess(db.name, fileSize, url, latestUrl);
 
       // Cleanup local compressed file
       await fs.unlink(compressedPath);

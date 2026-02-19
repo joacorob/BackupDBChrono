@@ -16,13 +16,14 @@ class TelegramService {
     }
   }
 
-  async notifyBackupSuccess(dbName, size, downloadUrl) {
+  async notifyBackupSuccess(dbName, size, downloadUrl, latestUrl) {
     const message =
       `✅ <b>Backup Successful</b>\n\n` +
       `Database: <code>${dbName}</code>\n` +
       `Size: <code>${size}</code>\n` +
       `Time: <code>${new Date().toISOString()}</code>\n\n` +
-      `📥 <a href="${downloadUrl}">Descargar backup</a>`;
+      `📥 <a href="${downloadUrl}">Descargar backup</a>\n` +
+      `🔗 <a href="${latestUrl}">URL fija (latest)</a>`;
 
     await this.sendMessage(message);
   }

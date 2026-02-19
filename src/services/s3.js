@@ -1,6 +1,7 @@
 import {
   S3Client,
   PutObjectCommand,
+  CopyObjectCommand,
   ListObjectsV2Command,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
@@ -39,7 +40,21 @@ export async function uploadToS3(filePath, dbName) {
     })
   );
 
-  return `https://${process.env.S3_BUCKET}.sfo3.digitaloceanspaces.com/${key}`;
+  // Copy as latest so there's always a fixed URL
+  const latestKey = `${dbName}/latest.gz`;
+  await s3Client.send(
+    new CopyObjectCommand({
+      Bucket: process.env.S3_BUCKET,
+      CopySource: `${process.env.S3_BUCKET}/${key}`,
+      Key: latestKey,
+      ContentType: "application/gzip",
+      ACL: "public-read",
+      MetadataDirective: "REPLACE",
+    })
+  );
+
+  const baseUrl = `https://${process.env.S3_BUCKET}.sfo3.digitaloceanspaces.com`;
+  return { url: `${baseUrl}/${key}`, latestUrl: `${baseUrl}/${latestKey}` };
 }
 
 export async function cleanupOldBackups(dbName) {
