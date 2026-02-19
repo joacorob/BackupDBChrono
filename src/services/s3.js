@@ -67,12 +67,12 @@ export async function cleanupOldBackups(dbName) {
 
   if (!response.Contents) return;
 
-  const backups = response.Contents.filter((file) =>
-    /\.(zip|gz|archive)$/.test(file.Key)
-  ).sort((a, b) => b.LastModified - a.LastModified);
+  const backups = response.Contents
+    .filter((file) => /\.(zip|gz|archive)$/.test(file.Key) && !file.Key.includes("latest"))
+    .sort((a, b) => b.LastModified - a.LastModified);
 
-  // Keep only the last 30 backups (5 days with backups every 4 hours = 6 per day × 5 days)
-  const backupsToDelete = backups.slice(30);
+  // Keep only the last 3 backups
+  const backupsToDelete = backups.slice(3);
 
   for (const backup of backupsToDelete) {
     await s3Client.send(
