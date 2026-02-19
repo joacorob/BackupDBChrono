@@ -16,21 +16,26 @@ class TelegramService {
     }
   }
 
-  async notifyBackupSuccess(dbName, size) {
+  async notifyBackupSuccess(dbName, size, downloadUrl) {
     const message =
       `✅ <b>Backup Successful</b>\n\n` +
       `Database: <code>${dbName}</code>\n` +
       `Size: <code>${size}</code>\n` +
-      `Time: <code>${new Date().toISOString()}</code>`;
+      `Time: <code>${new Date().toISOString()}</code>\n\n` +
+      `📥 <a href="${downloadUrl}">Descargar backup</a>`;
 
     await this.sendMessage(message);
   }
 
   async notifyBackupError(dbName, error) {
+    const safeError = error.message
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
     const message =
       `❌ <b>Backup Failed</b>\n\n` +
       `Database: <code>${dbName}</code>\n` +
-      `Error: <code>${error.message}</code>\n` +
+      `Error: <code>${safeError}</code>\n` +
       `Time: <code>${new Date().toISOString()}</code>`;
 
     await this.sendMessage(message);

@@ -1,11 +1,14 @@
 import "dotenv/config";
 import cron from "node-cron";
 import fs from "fs/promises";
+import path from "path";
 import { databases } from "./config/databases.js";
 import { backupDatabase } from "./services/backup.js";
 import { uploadToS3, cleanupOldBackups } from "./services/s3.js";
 import { compressFile } from "./utils/compression.js";
 import { telegramService } from "./services/telegram.js";
+
+const BACKUP_DIR = "./backups";
 
 async function getFileSize(path) {
   const stats = await fs.stat(path);
@@ -22,8 +25,29 @@ async function getFileSize(path) {
   return `${size.toFixed(2)} ${units[unit]}`;
 }
 
+async function cleanupLocalBackups() {
+  try {
+    const files = await fs.readdir(BACKUP_DIR);
+    for (const file of files) {
+      if (file === ".keep") continue;
+      const filePath = path.join(BACKUP_DIR, file);
+      const stat = await fs.stat(filePath);
+      if (stat.isDirectory()) {
+        await fs.rm(filePath, { recursive: true, force: true });
+      } else {
+        await fs.unlink(filePath);
+      }
+    }
+  } catch (error) {
+    console.error("Error cleaning up local backups:", error);
+  }
+}
+
 async function performBackup() {
   console.log("Starting backup process:", new Date().toISOString());
+
+  // Clean up orphan files from previous failed runs
+  await cleanupLocalBackups();
 
   for (const db of databases) {
     try {
@@ -38,11 +62,11 @@ async function performBackup() {
       const fileSize = await getFileSize(compressedPath);
 
       // Upload to S3
-      await uploadToS3(compressedPath, db.name);
+      const downloadUrl = await uploadToS3(compressedPath, db.name);
       console.log(`Backup uploaded for ${db.name}`);
 
       // Notify success
-      await telegramService.notifyBackupSuccess(db.name, fileSize);
+      await telegramService.notifyBackupSuccess(db.name, fileSize, downloadUrl);
 
       // Cleanup local compressed file
       await fs.unlink(compressedPath);

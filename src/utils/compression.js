@@ -1,20 +1,19 @@
-import AdmZip from "adm-zip";
-import path from "path";
+import { createGzip } from "zlib";
+import { createReadStream, createWriteStream } from "fs";
+import { pipeline } from "stream/promises";
 import fs from "fs/promises";
 
 export async function compressFile(filePath) {
-  const zip = new AdmZip();
-  const originalFileName = path.basename(filePath);
-  const zipPath = filePath.replace(path.extname(filePath), ".zip");
+  const gzPath = filePath + ".gz";
 
-  // Add file to zip
-  zip.addLocalFile(filePath);
-
-  // Write zip file
-  zip.writeZip(zipPath);
+  await pipeline(
+    createReadStream(filePath),
+    createGzip(),
+    createWriteStream(gzPath)
+  );
 
   // Remove original file
   await fs.unlink(filePath);
 
-  return zipPath;
+  return gzPath;
 }

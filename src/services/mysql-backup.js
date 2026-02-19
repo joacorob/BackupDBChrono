@@ -90,31 +90,50 @@ export async function backupMysql(url, destPath) {
       );
       await writeStream.write(`${createTable[0]["Create Table"]};\n\n`);
 
-      // Get table data
-      const [rows] = await connection.query(`SELECT * FROM \`${tableName}\``);
+      // Stream table data to avoid loading everything in memory
+      const stream = connection.connection
+        .query(`SELECT * FROM \`${tableName}\``)
+        .stream();
 
-      if (rows.length > 0) {
-        await writeStream.write(
-          `--\n-- Dumping data for table \`${tableName}\`\n--\n\n`
-        );
+      const batchSize = 1000;
+      let batch = [];
+      let columns = null;
+      let headerWritten = false;
 
-        // Generate insert statements in batches
-        const batchSize = 1000;
-        for (let i = 0; i < rows.length; i += batchSize) {
-          const batch = rows.slice(i, i + batchSize);
-          const values = batch.map((row) => {
-            const rowValues = Object.values(row).map(formatValue);
-            return `(${rowValues.join(", ")})`;
-          });
-
-          const columns = Object.keys(rows[0])
+      for await (const row of stream) {
+        if (!headerWritten) {
+          await writeStream.write(
+            `--\n-- Dumping data for table \`${tableName}\`\n--\n\n`
+          );
+          columns = Object.keys(row)
             .map((key) => `\`${key}\``)
             .join(", ");
-          await writeStream.write(
-            `INSERT INTO \`${tableName}\` (${columns}) VALUES\n`
-          );
-          await writeStream.write(`${values.join(",\n")};\n\n`);
+          headerWritten = true;
         }
+
+        batch.push(row);
+
+        if (batch.length >= batchSize) {
+          const values = batch.map((r) => {
+            const rowValues = Object.values(r).map(formatValue);
+            return `(${rowValues.join(", ")})`;
+          });
+          await writeStream.write(
+            `INSERT INTO \`${tableName}\` (${columns}) VALUES\n${values.join(",\n")};\n\n`
+          );
+          batch = [];
+        }
+      }
+
+      // Write remaining rows
+      if (batch.length > 0) {
+        const values = batch.map((r) => {
+          const rowValues = Object.values(r).map(formatValue);
+          return `(${rowValues.join(", ")})`;
+        });
+        await writeStream.write(
+          `INSERT INTO \`${tableName}\` (${columns}) VALUES\n${values.join(",\n")};\n\n`
+        );
       }
     }
 

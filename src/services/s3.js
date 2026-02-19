@@ -5,6 +5,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import fs from "fs/promises";
+import { createReadStream } from "fs";
 import path from "path";
 
 // const s3Client = new S3Client({
@@ -21,17 +22,24 @@ const s3Client = new S3Client({
 });
 
 export async function uploadToS3(filePath, dbName) {
-  const fileContent = await fs.readFile(filePath);
+  const fileStats = await fs.stat(filePath);
+  const fileStream = createReadStream(filePath);
   const fileName = path.basename(filePath);
+
+  const key = `${dbName}/${fileName}`;
 
   await s3Client.send(
     new PutObjectCommand({
       Bucket: process.env.S3_BUCKET,
-      Key: `${dbName}/${fileName}`,
-      Body: fileContent,
-      ContentType: "application/zip",
+      Key: key,
+      Body: fileStream,
+      ContentLength: fileStats.size,
+      ContentType: "application/gzip",
+      ACL: "public-read",
     })
   );
+
+  return `https://${process.env.S3_BUCKET}.sfo3.digitaloceanspaces.com/${key}`;
 }
 
 export async function cleanupOldBackups(dbName) {
@@ -44,9 +52,8 @@ export async function cleanupOldBackups(dbName) {
 
   if (!response.Contents) return;
 
-  // Filter only zip files
   const backups = response.Contents.filter((file) =>
-    file.Key.endsWith(".zip")
+    /\.(zip|gz|archive)$/.test(file.Key)
   ).sort((a, b) => b.LastModified - a.LastModified);
 
   // Keep only the last 30 backups (5 days with backups every 4 hours = 6 per day × 5 days)
