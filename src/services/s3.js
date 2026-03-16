@@ -71,8 +71,8 @@ export async function cleanupOldBackups(dbName) {
     .filter((file) => /\.(zip|gz|archive)$/.test(file.Key) && !file.Key.includes("latest"))
     .sort((a, b) => b.LastModified - a.LastModified);
 
-  // Keep only the last 3 backups
-  const backupsToDelete = backups.slice(3);
+  // Keep only the last 10 backups
+  const backupsToDelete = backups.slice(10);
 
   for (const backup of backupsToDelete) {
     await s3Client.send(
