@@ -4,6 +4,7 @@ import { createBackupFileName } from "../utils/naming.js";
 import { backupSqlite } from "./sqlite-backup.js";
 import { backupMysql } from "./mysql-backup.js";
 import { backupMongodb } from "./mongodb-backup.js";
+import { backupPostgres } from "./postgres-backup.js";
 
 const BACKUP_DIR = "./backups";
 
@@ -23,6 +24,10 @@ export async function backupDatabase(db) {
         break;
       case "mongodb":
         await backupMongodb(db.url, backupPath);
+        break;
+      case "postgresql":
+      case "postgres":
+        await backupPostgres(db.url, backupPath);
         break;
       default:
         throw new Error(`Unsupported database type: ${db.type}`);
