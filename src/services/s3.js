@@ -14,12 +14,13 @@ import path from "path";
 // });
 
 const s3Client = new S3Client({
-  endpoint: "https://sfo3.digitaloceanspaces.com",
+  endpoint: process.env.S3_ENDPOINT,
   region: process.env.AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
+  forcePathStyle: true,
 });
 
 export async function uploadToS3(filePath, dbName) {
@@ -36,7 +37,6 @@ export async function uploadToS3(filePath, dbName) {
       Body: fileStream,
       ContentLength: fileStats.size,
       ContentType: "application/gzip",
-      ACL: "public-read",
     })
   );
 
@@ -48,13 +48,12 @@ export async function uploadToS3(filePath, dbName) {
       CopySource: `${process.env.S3_BUCKET}/${key}`,
       Key: latestKey,
       ContentType: "application/gzip",
-      ACL: "public-read",
       MetadataDirective: "REPLACE",
     })
   );
 
-  const baseUrl = `https://${process.env.S3_BUCKET}.sfo3.digitaloceanspaces.com`;
-  return { url: `${baseUrl}/${key}`, latestUrl: `${baseUrl}/${latestKey}` };
+  const cdnUrl = process.env.S3_CDN_URL || `${process.env.S3_ENDPOINT}/${process.env.S3_BUCKET}`;
+  return { url: `${cdnUrl}/${key}`, latestUrl: `${cdnUrl}/${latestKey}` };
 }
 
 export async function cleanupOldBackups(dbName) {
