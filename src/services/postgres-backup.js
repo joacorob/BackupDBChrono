@@ -4,7 +4,7 @@ export async function backupPostgres(url, destPath) {
   return new Promise((resolve, reject) => {
     const pgDump = spawn(
       "/usr/lib/postgresql/15/bin/pg_dump",
-      ["--no-owner", "--no-acl", "--no-security-labels", "--schema=public", "--enable-row-security", "-f", destPath, url],
+      ["--enable-row-security", "-f", destPath, url],
       { shell: true }
     );
 

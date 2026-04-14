@@ -37,6 +37,7 @@ export async function uploadToS3(filePath, dbName) {
       Body: fileStream,
       ContentLength: fileStats.size,
       ContentType: "application/gzip",
+      ACL: "public-read",
     })
   );
 
@@ -49,6 +50,7 @@ export async function uploadToS3(filePath, dbName) {
       Key: latestKey,
       ContentType: "application/gzip",
       MetadataDirective: "REPLACE",
+      ACL: "public-read",
     })
   );
 
